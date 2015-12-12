@@ -46,7 +46,7 @@ to detect whether *ntpd* does support nanosecond resolution.
 .. code-block:: python
 
    print ntpd_shm.clockTimeStamp          # clockTimeStampSec.clockTimeStampUSec
-   print tpd_shm.receiveTimeStamp         # receiveTimeStampSec.receiveTimeStampUSec
+   print ntpd_shm.receiveTimeStamp         # receiveTimeStampSec.receiveTimeStampUSec
 
 The process to feed *ntpd* an external reference time is shown below.
 
@@ -64,7 +64,7 @@ The process to feed *ntpd* an external reference time is shown below.
    ntpd_shm.count += 1
    ntpd_shm.valid = True
      
-As this is somewhat cumbersome, there is a convenience method `update()` that achieves the same in 
+As this is somewhat cumbersome, there is a convenience method ``update()`` that achieves the same in 
 a single line. It requires the ``clock_time`` as mandatory argument and accepts several optional
 arguments.
 
