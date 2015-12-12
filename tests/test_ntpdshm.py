@@ -241,6 +241,8 @@ class NtpdShmTests(object):
         self.shm.mode = self.int_ + 5
 
         self.shm.update(654321.214365879)
+        # Below may fail in rare circumstances as a false positive.
+        assert int(self.shm.receiveTimeStamp) == int(time.time())	
         assert self.shm.clockTimeStamp == 654321.214365
         assert self.shm.clockTimeStampSec == 654321
         assert self.shm.clockTimeStampUSec == 214365
@@ -252,7 +254,7 @@ class NtpdShmTests(object):
         assert self.shm.precision == self.int_ + 3
         assert self.shm.nsamples == self.int_ + 4
         assert self.shm.mode == self.int_ + 5
-
+       
     def test_update_leap(self):
         self.shm.valid = False
         self.shm.count = self.int_ + 1

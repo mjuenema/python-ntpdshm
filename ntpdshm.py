@@ -13,7 +13,7 @@ URL = 'https://github.com/mjuenema/python-ntpdshm'
 
 
 import struct 
-import ctypes
+import time
 import sysv_ipc
 
 NTPD_SHM_KEY = 0x4e545030
@@ -176,7 +176,9 @@ class NtpdShm(object):
         self.count += 1
         self.clockTimeStamp = clockTimeStamp
 
-        if receiveTimeStamp is not None:
+        if receiveTimeStamp is None:
+            self.receiveTimeStamp = time.time()
+        else:
             self.receiveTimeStamp = receiveTimeStamp
 
         if mode is not None:
