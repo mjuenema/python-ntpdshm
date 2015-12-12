@@ -64,12 +64,12 @@ The process to feed *ntpd* an external reference time is shown below.
    clock_time = get_clock_time()          # `get_clock_time` must be implemented somewhere else and
                                           # return a float.
    recev_time = time.time()
-   ntpd_shm.valid = False                 # can use Python boolean here
+   ntpd_shm.valid = 0                     # don't use Python boolean
    ntpd_shm.clockTimeStamp = clock_time   
    ntpd_shm.receiveTimeStamp = recv_time  
    ntpd_shm.precision = -5                # 2^-5 = 0.03125 seconds in this case
    ntpd_shm.count += 1
-   ntpd_shm.valid = True
+   ntpd_shm.valid = 1
      
 As this is somewhat cumbersome, there is a convenience method ``update()`` that achieves the same in 
 a single line. It requires the ``clock_time`` as mandatory argument and accepts several optional
