@@ -4,7 +4,7 @@ python-ntpdshm
 Status
 ======
 
-**This Python package is currently in the planning phase. There is no actual code yet.**
+**This Python package is currently in the planning phase. The code hasn't actually being tested together with ntpd.**
 
 Overview
 ========
