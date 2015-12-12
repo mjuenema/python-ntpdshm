@@ -43,8 +43,8 @@ class NtpdShm(object):
     def __init__(self, unit=0):
         self.unit = 0
 
-        if unit < 0:
-            raise ValueError("unit must be posotive")
+        if unit < 0 or unit > 5:
+            raise ValueError("unit must be one of 0,2,3,4,5")
 
         if unit in [0,1]:
             mode = 0600
@@ -66,7 +66,10 @@ class NtpdShm(object):
 
     def __del__(self):
         self.shm.detach()
-        self.shm.remove()	# in case ntpd is not running.
+        try:
+            self.shm.remove()
+        except sysv_ipc.PermissionsError:
+            pass
 
     def _get(self, n, s=_INT):
         """Get a field from shared memory.
