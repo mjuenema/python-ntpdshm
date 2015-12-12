@@ -4,7 +4,7 @@ python-ntpdshm
 Status
 ======
 
-**This Python package is currently in the planning phase. The code hasn't actually being tested together with ntpd.**
+**The current implementation does not work as it does not consider byte-alignement in the shared memory structure. I am currently re-implementing shared memory access through a C library.**
 
 Overview
 ========
