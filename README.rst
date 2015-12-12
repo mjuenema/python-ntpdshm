@@ -4,15 +4,20 @@ python-ntpdshm
 Status
 ======
 
-This Python package is currently in the planning phase. There is no actual code yet.
+**This Python package is currently in the planning phase. There is no actual code yet.**
 
 Overview
 ========
 
 *python-ntpdshm* provides a Python interface to *ntpd's* shared memory `driver 28`_. A single
-class exposes the fields of the shared memory structure as attributes that can be read and written.
-In addition there are convenience functions for updating the time related fields in a
+class ``NtpdShm`` exposes the fields of the shared memory structure as attributes that can be read and written.
+In addition is a convenience ``update()`` function for updating the time related fields in a
 single step.
+
+*python-ntpdshm* is implemented entirely in Python, building on the ctypes_ module of the Python Standard Library and Philip Semanchuk's posix_ipc_ package.
+
+.. _ctypes: https://docs.python.org/2/library/ctypes.html
+.. _posix_ipc: https://pypi.python.org/pypi/posix_ipc
 
 Example
 =======
