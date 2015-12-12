@@ -84,3 +84,46 @@ arguments.
    ntpd_shm.update(clock_time)
 
 .. _`driver 28`: http://doc.ntp.org/4.2.8/drivers/driver28.html
+
+Just for fun
+============
+
+A just for fun example of using *python-ntpdshm* is to implement an "off by one second" reference time source for *ntpd*. While this example makes no sense at all for practical purposes it provides a useful template for how it all hangs together.
+
+First we write the code for the reference clock.
+
+.. code-block:: python
+
+   import time
+   import ntpdshm
+   
+   def get_clock_time():
+       return time.time() - 1.0     # always be exactly one second behind.
+       
+   def main():
+       ntpd_shm = ntpdshm.NtpdShm(unit=2)
+       ntpd_shm.precision = -6      # set precision once
+       ntpd_shm.leap = 0            # how would we know about leap seconds?
+       
+       while True:
+           clock_time = get_clock_time()
+           ntpd_shm.update(clock_time)
+           time.sleep(1.0)
+           
+   if __name__ == '__main__':
+       main()
+       
+Then add the shared memory reference clock to ``ntp.conf``:: 
+
+  # ntp.conf
+  server 127.127.28.2 noselect     # unit=2, never select this reference
+  fudge 127.127.28.2 refid PYTH stratum 10
+
+Restart *ntpd* and monitor the output of ``ntpq -pn``. The offset should be exactly -1000 msec:
+
+.. code-block:: console
+
+   $ ntpq -pn
+   TODO
+
+  
