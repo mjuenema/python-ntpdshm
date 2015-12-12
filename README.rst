@@ -19,6 +19,8 @@ single step.
 .. _ctypes: https://docs.python.org/2/library/ctypes.html
 .. _posix_ipc: https://pypi.python.org/pypi/posix_ipc
 
+*python-ntpdshm* works with all Python versions since 2.6 (well, we'll see!)
+
 Example
 =======
 
