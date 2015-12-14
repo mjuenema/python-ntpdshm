@@ -3,24 +3,10 @@ Python interface to NTP Shared Memory.
 
 """
 
-NAME = 'ntpdshm'
-VERSION = '0.1.0'
-LICENSE = 'BSD License'
-AUTHOR = 'Markus Juenemann'
-EMAIL = 'markus@juenemann.net'
-DESCRIPTION = 'Python interface to NTP Shared Memory'
-URL = 'https://github.com/mjuenema/python-ntpdshm'
+import time 
+import ntpdshm.shm 
 
-
-import struct 
-import time
-import sysv_ipc
-
-NTPD_SHM_KEY = 0x4e545030
-
-_INT = struct.Struct('i')
-_UINT = struct.Struct('I')
-_SIZE = _INT.size
+#NTPD_SHM_KEY = 0x4e545030
 
 LEAP_NOWARNING = 0x0
 LEAP_ADDSECOND = 0x1
@@ -31,111 +17,55 @@ LEAP_NOTINSYNC = 0x3
 class NtpdShm(object):
     """NTP Shared Memory.
 
-       One of the convenient thing about the NTP shared memory is
-       that all fields are of the same size (integer, unsigned integer
-       or time_t). This makes it easy to calulate the offset
-       into the shared memory as a multiple of the size of an
-       integer.
-
     """
 
-
     def __init__(self, unit=0):
-        self.unit = 0
-
         if unit < 0 or unit > 5:
-            raise ValueError("unit must be one of 0,2,3,4,5")
+            raise ValueError("unit must be 0 <= unit <= 5")
 
-        if unit in [0,1]:
-            mode = 0600
-        else:
-            mode = 0666
+        self.ntpd_shm = ntpdshm.shm.shm_get(unit)
+        if self.ntpd_shm is None:
+            raise OSError('Unable to attach to ntpd shared memory unit %d', unit)
 
-        try:
-            # Open new shared memory segment.
-            self.shm = sysv_ipc.SharedMemory(key=NTPD_SHM_KEY + unit, 
-                                    flags=sysv_ipc.IPC_CREX,
-                                    mode=mode,
-                                    size=20*_SIZE)
-        except sysv_ipc.ExistentialError:
-            # Open existing shared memory segment.
-            self.shm = sysv_ipc.SharedMemory(key=NTPD_SHM_KEY + unit, 
-                                    flags=0,
-                                    mode=mode,
-                                    size=0)
+    mode = property(lambda self: ntpdshm.shm.get_mode(self.ntpd_shm),
+                    lambda self,mode: ntpdshm.shm.set_mode(self.ntpd_shm, mode))
 
-    def __del__(self):
-        self.shm.detach()
-        try:
-            self.shm.remove()
-        except sysv_ipc.PermissionsError:
-            pass
+    count = property(lambda self: ntpdshm.shm.get_count(self.ntpd_shm),
+                     lambda self,count: ntpdshm.shm.set_count(self.ntpd_shm, count))
 
-    def _get(self, n, s=_INT):
-        """Get a field from shared memory.
- 
-           :param n: Get the n'th field.
-           :type n: Integer greater or equal zero.
-           :param s: Converter into integer or unsigned integer.
-           :type s: Instance of `struct.Struct`.
-           :returns: The value of the field.
-           :rtype: Integer as appropriate for the field. 
-          
-        """
+    clockTimeStampSec = property(lambda self: ntpdshm.shm.get_clockTimeStampSec(self.ntpd_shm),
+                                 lambda self,clockTimeStampSec: ntpdshm.shm.set_clockTimeStampSec(self.ntpd_shm, clockTimeStampSec))
 
-        return s.unpack(self.shm.read(_SIZE, n*_SIZE))[0]
+    clockTimeStampUSec = property(lambda self: ntpdshm.shm.get_clockTimeStampUSec(self.ntpd_shm),
+                                  lambda self,clockTimeStampUSec: ntpdshm.shm.set_clockTimeStampUSec(self.ntpd_shm, clockTimeStampUSec))
+
+    clockTimeStampNSec = property(lambda self: ntpdshm.shm.get_clockTimeStampNSec(self.ntpd_shm),
+                                  lambda self,clockTimeStampNSec: ntpdshm.shm.set_clockTimeStampNSec(self.ntpd_shm, clockTimeStampNSec))
+
+    receiveTimeStampSec = property(lambda self: ntpdshm.shm.get_receiveTimeStampSec(self.ntpd_shm),
+                                   lambda self,receiveTimeStampSec: ntpdshm.shm.set_receiveTimeStampSec(self.ntpd_shm, receiveTimeStampSec))
+
+    receiveTimeStampUSec = property(lambda self: ntpdshm.shm.get_receiveTimeStampUSec(self.ntpd_shm),
+                                    lambda self,receiveTimeStampUSec: ntpdshm.shm.set_receiveTimeStampUSec(self.ntpd_shm, receiveTimeStampUSec))
+
+    receiveTimeStampNSec = property(lambda self: ntpdshm.shm.get_receiveTimeStampNSec(self.ntpd_shm),
+                                    lambda self,receiveTimeStampNSec: ntpdshm.shm.set_receiveTimeStampNSec(self.ntpd_shm, receiveTimeStampNSec))
+
+    leap = property(lambda self: ntpdshm.shm.get_leap(self.ntpd_shm),
+                    lambda self,leap: ntpdshm.shm.set_leap(self.ntpd_shm, leap))
+
+    precision = property(lambda self: ntpdshm.shm.get_precision(self.ntpd_shm),
+                         lambda self,precision: ntpdshm.shm.set_precision(self.ntpd_shm, precision))
+
+    nsamples = property(lambda self: ntpdshm.shm.get_nsamples(self.ntpd_shm),
+                        lambda self,nsamples: ntpdshm.shm.set_nsamples(self.ntpd_shm, nsamples))
+
+    _valid = property(lambda self: ntpdshm.shm.get_valid(self.ntpd_shm),
+                      lambda self,valid: ntpdshm.shm.set_valid(self.ntpd_shm, valid))
 
 
-    def _set(self, v, n, s=_INT):
-        """Set a field in shared memory.
-
-           :param v: The value to set the field to.
-           :type v: Integer as appropriate for the field. 
-           :param n: Get the n'th field.
-           :type n: Integer greater or equal zero.
-           :param s: Converter into integer or unsigned integer.
-           :type s: Instance of `struct.Struct`.
-
-        """
-
-        self.shm.write(s.pack(v), n*_SIZE)
-
-    mode = property(lambda self: self._get(0), 
-                    lambda self,v: self._set(v, 0))
-
-    count = property(lambda self: self._get(1), 
-                     lambda self,v: self._set(v, 1))
-
-    clockTimeStampSec = property(lambda self: self._get(2), 
-                                 lambda self,v: self._set(v, 2))
-
-    clockTimeStampUSec = property(lambda self: self._get(3), 
-                                  lambda self,v: self._set(v, 3))
-
-    clockTimeStampNSec = property(lambda self: self._get(10, _UINT), 
-                                  lambda self,v: self._set(v, 10, _UINT))
-
-    receiveTimeStampSec = property(lambda self: self._get(4), 
-                                   lambda self,v: self._set(v, 4))
-
-    receiveTimeStampUSec = property(lambda self: self._get(5), 
-                                    lambda self,v: self._set(v, 5))
-
-    receiveTimeStampNSec = property(lambda self: self._get(11, _UINT), 
-                                    lambda self,v: self._set(v, 11, _UINT))
-
-    leap = property(lambda self: self._get(6),
-                    lambda self,v: self._set(v, 6))
-
-    precision = property(lambda self: self._get(7),
-                         lambda self,v: self._set(v, 7))
-
-    nsamples = property(lambda self: self._get(8),
-                        lambda self,v: self._set(v, 8))
-
-    _valid = property(lambda self: self._get(9),
-                      lambda self,v: self._set(v, 9))
-
+    # valid
+    #
     def _get_valid(self):
         return self._valid == True
 
@@ -147,6 +77,9 @@ class NtpdShm(object):
 
     valid = property(_get_valid, _set_valid)
 
+
+    # clockTimeStamp
+    #
     def _get_clockTimeStamp(self):
         return float(self.clockTimeStampSec) + float(self.clockTimeStampUSec) / 10**6
 
@@ -157,6 +90,9 @@ class NtpdShm(object):
 
     clockTimeStamp = property(_get_clockTimeStamp, _set_clockTimeStamp)
 
+
+    # receiveTimeStamp
+    #
     def _get_receiveTimeStamp(self):
         return float(self.receiveTimeStampSec) + float(self.receiveTimeStampUSec) / 10**6
 
@@ -167,6 +103,7 @@ class NtpdShm(object):
 
     receiveTimeStamp = property(_get_receiveTimeStamp, _set_receiveTimeStamp)
 
+
     def update(self,
                clockTimeStamp,
                receiveTimeStamp=None,
@@ -176,7 +113,7 @@ class NtpdShm(object):
                nsamples=None):
 
         self.valid = False
-        self.count += 1
+        self.count = self.count + 1
         self.clockTimeStamp = clockTimeStamp
 
         if receiveTimeStamp is None:
@@ -197,6 +134,3 @@ class NtpdShm(object):
             self.nsamples = nsamples
 
         self.valid = True
-               
-        
-        

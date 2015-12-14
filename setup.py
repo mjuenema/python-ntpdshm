@@ -1,20 +1,17 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+NAME = 'ntpdshm'
+VERSION = '0.1.0'
+LICENSE = 'BSD License'
+AUTHOR = 'Markus Juenemann'
+EMAIL = 'markus@juenemann.net'
+DESCRIPTION = 'Python interface to NTP Shared Memory'
+URL = 'https://github.com/mjuenema/python-ntpdshm'
 
-#try:
 from setuptools import setup, Extension
-#except ImportError:
-#from distutils.core import setup, Extension
-
-
-ntpdshm_module = Extension('_ntpdshm', sources=['ntpdshm/ntpdshm.i'],)
-
+ntpdshm_module = Extension('ntpdshm._shm', sources=['ntpdshm/shm.c', 'ntpdshm/shm_wrap.c'],)
 
 from os.path import join, dirname
-
-
-from ntpdshm import NAME, VERSION, LICENSE, AUTHOR, EMAIL, DESCRIPTION, URL
 
 readme = open(join(dirname(__file__), 'README.rst')).read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
