@@ -1,3 +1,4 @@
+******************
 ntpd Shared Memory
 ******************
 
@@ -82,43 +83,6 @@ version `4.2.7p303`_, reducing the size of the traling ``dummy`` member from 10 
 .. _source: http://stackoverflow.com/questions/11220627/ntp-shared-memory-driver-structure
 
 **Note: One of the two next paragraphs will be removed once I have decided whether to use Python's ctypes_ or struct_ modules.**
-
-The Python ctypes_ structure is shown below. Note that it is assumed that the definition 
-of ``time_t`` is equal to a signed integer. As far as I understand this is a correct assumption
-for all Unix-like systems as well as for Microsoft Windows. 
-
-.. _struct: https://docs.python.org/2/library/ctypes.html
-
-.. code-block::
-
-   import ctypes
-
-   class NtpdShmStruct(ctypes.Structure):
-       _fields_ = [('mode',  ctypes.c_int),
-                   ('count', ctypes.c_int),
-                   ('clockTimeStampSec', ctypes.c_int),     # assumes time_t = c_int
-                   ('clockTimeStampUSec', ctypes.c_int),
-                   ('receiveTimeStampSec', ctypes.c_int),   # assumes time_t = c_int
-                   ('receiveTimeStampUSec', ctypes.c_int),
-                   ('leap', ctypes.c_int),
-                   ('precision', ctypes.c_int),
-                   ('nsamples', ctypes.c_int),
-                   ('valid', ctypes.c_int),
-                   ('clockTimeStampNSec', ctypes.c_uint),
-                   ('receiveTimeStampNSec', ctypes.c_uint),
-                   ('dummy', ctypes.c_int * 8)]
-
-The Python struct_ is shown below. Note that it is assumed that the definition 
-of ``time_t`` is equal to a signed integer. As far as I understand this is a correct assumption
-for all Unix-like systems as well as for Microsoft Windows. 
-
-.. _struct: https://docs.python.org/2/library/struct.html
-
-.. code-block::
-
-   import struct
-   ntpd_shm_struct = struct.Struct('iiiiiiiiiiII8i')
-
 
 The purpose of the shared memory driver is to allow other processes to pass time information
 into *ntpd*. The most prominent implementation is probably `gpsd`_. The process can be described 

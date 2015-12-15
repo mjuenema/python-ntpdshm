@@ -16,14 +16,8 @@ from os.path import join, dirname
 readme = open(join(dirname(__file__), 'README.rst')).read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
-requirements = [
-    # 'package1', 'package2'
-    
-]
-
-test_requirements = [
-    # 'package1', 'package2'
-]
+requirements = open(join(dirname(__file__), 'requirements.txt')).read().split()
+test_requirements = open(join(dirname(__file__), 'test_requirements.txt')).read().split()
 
 setup(
     name=NAME,
@@ -46,13 +40,21 @@ setup(
     zip_safe=False,
     keywords='ntp, shared memory',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
+        'Operating System :: Unix',
         'Topic :: Software Development :: Libraries',
+        'Topic :: System :: Networking :: Time Synchronization',
+        'Programming Language :: Python :: C',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
     ],
     test_suite='tests',
     tests_require=test_requirements
