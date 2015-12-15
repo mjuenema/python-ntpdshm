@@ -12,6 +12,7 @@ python:
 
 before_install:
   - pip install codecov
+  - apt-get install -qq swig
 
 install:
   - pip install -r requirements.txt
