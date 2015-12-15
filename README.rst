@@ -1,11 +1,6 @@
 python-ntpdshm
 **************
 
-Status
-======
-
-**The current implementation does not work as it does not consider byte-alignement in the shared memory structure. I am currently re-implementing shared memory access through a C library.**
-
 Overview
 ========
 
@@ -18,7 +13,14 @@ single step.
 
 .. _Swig: http://www.swig.org/Doc1.3/Python.html
 
-*python-ntpdshm* works with all Python versions since 2.6 (well, we'll see!)
+*python-ntpdshm* works with the following Python versions.
+
+* Python 2.6
+* Python 2.7
+* Python 3.3
+* Python 3.4
+* Python 3.5
+* PyPy (but not PyPy3!)
 
 Example
 =======
@@ -84,10 +86,14 @@ arguments.
 
 .. _`driver 28`: http://doc.ntp.org/4.2.8/drivers/driver28.html
 
-Just for fun
+
+Applications
 ============
 
-A just for fun example of using *python-ntpdshm* is to implement an "off by one second" reference time source for *ntpd*. While this example makes no sense at all for practical purposes it provides a useful template for how it all hangs together.
+"Off by one second" reference time
+----------------------------------
+
+A just for fun example of using *python-ntpdshm* is to implement an "off by one second" reference time source for *ntpd*. While this example makes no sense at all for practical purposes it provides a useful template for how it all fits together.
 
 First we write the code for the reference clock.
 
@@ -101,6 +107,7 @@ First we write the code for the reference clock.
        
    def main():
        ntpd_shm = ntpdshm.NtpdShm(unit=2)
+       ntpd_shm.mode = 0            # set mode
        ntpd_shm.precision = -6      # set precision once
        ntpd_shm.leap = 0            # how would we know about leap seconds?
        
@@ -115,6 +122,7 @@ First we write the code for the reference clock.
 Then add the shared memory reference clock to ``ntp.conf``:: 
 
   # ntp.conf
+  ...
   server 127.127.28.2 noselect     # unit=2, never select this reference
   fudge 127.127.28.2 refid PYTH stratum 10
 
@@ -123,5 +131,9 @@ Restart *ntpd* and monitor the output of ``ntpq -pn``. The offset should be exac
 .. code-block:: console
 
    $ ntpq -pn
-   TODO
+        remote           refid      st t when poll reach   delay   offset  jitter
+   ==============================================================================
+   ...
+    127.127.28.2    .PYTH.          10 l    9   16  377    0.000  -1000.0   0.017
+
   
