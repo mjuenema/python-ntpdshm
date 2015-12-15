@@ -156,4 +156,7 @@ Then start ``htntp.py`` as shown below. Chose web servers that provide quick res
   
   .. code-block:: console
   
-     # python htntp.py --unit 2 --interval 300 --proxy 192.168.1.1:3128 www.google.com.au www.ebay.com.au www.abc.net.au
+     # python htntp.py --unit 2 --interval 300  www.google.com.au www.ebay.com.au www.abc.net.au
+
+Why would one do this when *ntpd* can achieve much better accuracy? The one and only reason is to help out those poor souls that sit behind restrictive firewalls that block the NTP protocol. Even the most restrictive firewall usually permits HTTP/S
+to pass.
