@@ -1,9 +1,16 @@
 
 
 
-all: clean build_ext
+all: help
+
+help:
+	exit 1
 
 
+# ---------------------------------------------------------
+#  
+#  packaging
+#
 sdist: clean swig
 	python setup.py sdist
 
@@ -12,6 +19,15 @@ bdist: clean swig
 
 rpm: clean swig
 	python setup.py bdist_rpm
+
+upload: clean swig sdist
+	twine upload dist/*
+
+info:
+	python setup.py egg_info
+
+register:
+	echo "https://pypi.python.org/pypi?%3Aaction=submit_form"
 
 
 # ---------------------------------------------------------
