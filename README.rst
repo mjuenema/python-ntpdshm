@@ -6,8 +6,7 @@ Overview
 
 *python-ntpdshm* provides a Python interface to *ntpd's* shared memory `driver 28`_. A single
 class ``NtpdShm`` exposes the fields of the shared memory structure as attributes that can be read and written.
-In addition is a convenience ``update()`` function for updating the time related fields in a
-single step.
+In addition there are properties to set the clock and receive timestamps from float values. There is also a convenience ``update()`` function for setting the time related fields in a single step.
 
 *python-ntpdshm* is implemented using Swig_.
 
