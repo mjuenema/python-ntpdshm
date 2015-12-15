@@ -14,10 +14,9 @@ class ``NtpdShm`` exposes the fields of the shared memory structure as attribute
 In addition is a convenience ``update()`` function for updating the time related fields in a
 single step.
 
-*python-ntpdshm* is implemented entirely in Python, building on the ctypes_ module of the Python Standard Library and Philip Semanchuk's posix_ipc_ package.
+*python-ntpdshm* is implemented using Swig_.
 
-.. _ctypes: https://docs.python.org/2/library/ctypes.html
-.. _posix_ipc: https://pypi.python.org/pypi/posix_ipc
+.. _Swig: http://www.swig.org/Doc1.3/Python.html
 
 *python-ntpdshm* works with all Python versions since 2.6 (well, we'll see!)
 
@@ -125,5 +124,4 @@ Restart *ntpd* and monitor the output of ``ntpq -pn``. The offset should be exac
 
    $ ntpq -pn
    TODO
-
   
