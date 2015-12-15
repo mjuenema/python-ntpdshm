@@ -135,4 +135,25 @@ Restart *ntpd* and monitor the output of ``ntpq -pn``. The offset should be exac
    ...
     127.127.28.2    .PYTH.          10 l    9   16  377    0.000  -1000.0   0.017
 
+"HyperTextNetworkTimeProtocol" (htntp)
+--------------------------------------
   
+**Note: This is currently in the planning stage.**
+  
+While there are already other (htpdate_, htp_) solutions for synchronising "a computer's time with web servers as reference time source", the *python-ntpdshm* project includes yet another implementation. The main difference is that this implementation "feeds" *ntpd's* shared memory driver while htpdate_ and htp_ take control of a system's time themselves. More importantly the *python-ntpdshm*/*ntpd* variant can achieve a much higher accuracy of +-0.1 seconds [*to be tested*] in comparison to +-0.5 seconds quoted by htpdate_ and htp_.
+  
+  .. _htpdate: http://www.vervest.org/htp/
+  .. _htp: http://www.rkeene.org/oss/htp/
+  
+Add the shared memory reference clock to ``ntp.conf``. Set ``minpoll`` and  ``maxpoll`` to intervals larger than the ``-i/--interval`` command line argument to ``htntp.py``::
+
+  # ntp.conf
+  ...
+  server 127.127.28.2 minpoll 9 maxpoll 9      # unit=2, poll every 2^9 = 512 seconds
+  fudge 127.127.28.2 refid HTTP stratum 5
+  
+Then start ``htntp.py`` as shown below. Chose web servers that provide quick response times; three to five servers should be sufficient.
+  
+  .. code-block:: console
+  
+     # python htntp.py --unit 2 --interval 300 --proxy 192.168.1.1:3128 www.google.com.au www.ebay.com.au www.abc.net.au
