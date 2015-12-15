@@ -1,24 +1,25 @@
 python-ntpdshm
 **************
 
-Status
-======
-
-**The current implementation does not work as it does not consider byte-alignement in the shared memory structure. I am currently re-implementing shared memory access through a C library.**
-
 Overview
 ========
 
 *python-ntpdshm* provides a Python interface to *ntpd's* shared memory `driver 28`_. A single
 class ``NtpdShm`` exposes the fields of the shared memory structure as attributes that can be read and written.
-In addition is a convenience ``update()`` function for updating the time related fields in a
-single step.
+In addition there are properties to set the clock and receive timestamps from float values. There is also a convenience ``update()`` function for setting the time related fields in a single step.
 
 *python-ntpdshm* is implemented using Swig_.
 
 .. _Swig: http://www.swig.org/Doc1.3/Python.html
 
-*python-ntpdshm* works with all Python versions since 2.6 (well, we'll see!)
+*python-ntpdshm* works with the following Python versions.
+
+* Python 2.6
+* Python 2.7
+* Python 3.3
+* Python 3.4
+* Python 3.5
+* PyPy (but not PyPy3!)
 
 Example
 =======
@@ -84,10 +85,14 @@ arguments.
 
 .. _`driver 28`: http://doc.ntp.org/4.2.8/drivers/driver28.html
 
-Just for fun
+
+Applications
 ============
 
-A just for fun example of using *python-ntpdshm* is to implement an "off by one second" reference time source for *ntpd*. While this example makes no sense at all for practical purposes it provides a useful template for how it all hangs together.
+"Off by one second" reference time
+----------------------------------
+
+A just for fun example of using *python-ntpdshm* is to implement an "off by one second" reference time source for *ntpd*. While this example makes no sense at all for practical purposes it provides a useful template for how it all fits together.
 
 First we write the code for the reference clock.
 
@@ -101,6 +106,7 @@ First we write the code for the reference clock.
        
    def main():
        ntpd_shm = ntpdshm.NtpdShm(unit=2)
+       ntpd_shm.mode = 0            # set mode
        ntpd_shm.precision = -6      # set precision once
        ntpd_shm.leap = 0            # how would we know about leap seconds?
        
@@ -115,6 +121,7 @@ First we write the code for the reference clock.
 Then add the shared memory reference clock to ``ntp.conf``:: 
 
   # ntp.conf
+  ...
   server 127.127.28.2 noselect     # unit=2, never select this reference
   fudge 127.127.28.2 refid PYTH stratum 10
 
@@ -123,5 +130,33 @@ Restart *ntpd* and monitor the output of ``ntpq -pn``. The offset should be exac
 .. code-block:: console
 
    $ ntpq -pn
-   TODO
+        remote           refid      st t when poll reach   delay   offset  jitter
+   ==============================================================================
+   ...
+    127.127.28.2    .PYTH.          10 l    9   16  377    0.000  -1000.0   0.017
+
+"HyperTextNetworkTimeProtocol" (htntp)
+--------------------------------------
   
+**Note: This is currently in the planning stage.**
+  
+While there are already other (htpdate_, htp_) solutions for synchronising "a computer's time with web servers as reference time source", the *python-ntpdshm* project includes yet another implementation. The main difference is that this implementation "feeds" *ntpd's* shared memory driver while htpdate_ and htp_ take control of a system's time themselves. More importantly the *python-ntpdshm*/*ntpd* variant can achieve a much higher accuracy of +-0.1 seconds [*to be tested*] in comparison to +-0.5 seconds quoted by htpdate_ and htp_.
+  
+  .. _htpdate: http://www.vervest.org/htp/
+  .. _htp: http://www.rkeene.org/oss/htp/
+  
+Add the shared memory reference clock to ``ntp.conf``. Set ``minpoll`` and  ``maxpoll`` to intervals larger than the ``-i/--interval`` command line argument to ``htntp.py``::
+
+  # ntp.conf
+  ...
+  server 127.127.28.2 minpoll 9 maxpoll 9      # unit=2, poll every 2^9 = 512 seconds
+  fudge 127.127.28.2 refid HTTP stratum 5
+  
+Then start ``htntp.py`` as shown below. Chose web servers that provide quick response times; three to five servers should be sufficient.
+  
+  .. code-block:: console
+  
+     # python htntp.py --unit 2 --interval 300  www.google.com.au www.ebay.com.au www.abc.net.au
+
+Why would one do this when *ntpd* can achieve much better accuracy? The one and only reason is to help out those poor souls that sit behind restrictive firewalls that block the NTP protocol. Even the most restrictive firewall usually permits HTTP/S
+to pass.
