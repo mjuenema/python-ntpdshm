@@ -55,3 +55,7 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Misc
+ntpdshm/shm.py
+ntpdshm/shm_wrap.c
