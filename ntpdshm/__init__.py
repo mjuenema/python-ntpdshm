@@ -20,8 +20,8 @@ class NtpdShm(object):
     """
 
     def __init__(self, unit=0):
-        if unit < 0 or unit > 5:
-            raise ValueError("unit must be 0 <= unit <= 5")
+        if unit < 0 or unit > 255:
+            raise ValueError("unit must be 0 <= unit <= 255")
 
         self.ntpd_shm = ntpdshm.shm.shm_get(unit)
         if self.ntpd_shm is None:
