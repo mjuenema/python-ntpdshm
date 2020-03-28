@@ -31,7 +31,7 @@ struct shmTime {
 };
 
 
-struct shmTime *shm_get(unsigned int unit) {
+struct shmTime *shm_get(unsigned int unit, unsigned int shm_key_base) {
     int shmid;
     void *shm_time;
 
