@@ -3,7 +3,7 @@
 History
 =======
 
-0.3.0 (29-Mar-2019)
+0.3.0 (not yet released)
 ---------------------
 * Allow access to multiple units of shared memory (pull requests #9)
 
