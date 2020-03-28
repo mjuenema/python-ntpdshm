@@ -12,13 +12,14 @@ In addition there are properties to set the clock and receive timestamps from fl
 
 .. _Swig: http://www.swig.org/Doc1.3/Python.html
 
-*python-ntpdshm* works with the following Python versions.
+*python-ntpdshm* has been tested against the following Python versions.
 
-* Python 2.6
 * Python 2.7
-* Python 3.3
 * Python 3.4
 * Python 3.5
+* Python 3.6
+* Python 3.7
+* Python 3.8
 * PyPy (but not PyPy3!)
 
 Example
