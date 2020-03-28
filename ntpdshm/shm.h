@@ -4,7 +4,7 @@
  *
  */
 
-struct shmTime *shm_get(unsigned int unit);
+struct shmTime *shm_get(unsigned int unit, unsigned int shm_key_base);
 int get_mode(struct shmTime *shm_time);
 void set_mode(struct shmTime *shm_time, int mode);
 int get_count(struct shmTime *shm_time);
