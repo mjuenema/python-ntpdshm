@@ -78,7 +78,7 @@ arguments.
 
 .. code-block:: python
 
-   ntpd_shm.update(clock_time, receiveTimeStamp=recv_time, precision=-5)
+   ntpd_shm.update(clock_time, recv_time=recv_time, precision=-5)
    
    # Or simply, if no other fields are to be changed. The receive timestamp is set
    # automatically.

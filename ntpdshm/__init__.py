@@ -6,23 +6,24 @@ Python interface to NTP Shared Memory.
 import time 
 import ntpdshm.shm 
 
-NTPD_SHM_KEY = 0x4e545030 # 'NTP0' + u
+#NTPD_SHM_KEY = 0x4e545030
 
 LEAP_NOWARNING = 0x0
 LEAP_ADDSECOND = 0x1
 LEAP_DELSECOND = 0x2
 LEAP_NOTINSYNC = 0x3
 
+
 class NtpdShm(object):
     """NTP Shared Memory.
 
     """
 
-    def __init__(self, unit=0, shm_key_base=NTPD_SHM_KEY):
-        if unit < 0 or unit > 255:
-            raise ValueError("unit must be 0 <= unit <= 255")
+    def __init__(self, unit=0):
+        if unit < 0 or unit > 5:
+            raise ValueError("unit must be 0 <= unit <= 5")
 
-        self.ntpd_shm = ntpdshm.shm.shm_get(unit, shm_key_base)
+        self.ntpd_shm = ntpdshm.shm.shm_get(unit)
         if self.ntpd_shm is None:
             raise OSError('Unable to attach to ntpd shared memory unit %d', unit)
 

@@ -1,7 +1,7 @@
 """
 Tests for ntpdshm.
 
-WARNING: These tests deliberately use a non-standard SHM base to avoid confusing NTPd.
+WARNING: Running these tests may confuse the hell out of ntpd!!!
 
 Markus Juenemann, 12-Dec-2015
 
@@ -19,7 +19,7 @@ import sys
 #def setup():
 #    sys.stderr.write('Testing, whether ntpd is accessing the shared memory... ')
 #    for unit in [0, 1, 2, 3]:
-#        shm = ntpdshm.NtpdShm(self.unit, NTPD_SHM_KEY_TEST)
+#        shm = ntpdshm.NtpdShm(unit)
 #
 #        count1 = copy.copy(shm.count)
 #        time.sleep(1.2)
@@ -31,13 +31,11 @@ import sys
 #    sys.stderr.write('no\n')
 
 
-NTPD_SHM_KEY_TEST = ntpdshm.NTPD_SHM_KEY + 0x1000 # We can have up to 255 units, but let's be really safe.
-
 class NtpdShmTests(object):
     unit = None
 
     def setup(self):
-        self.shm = ntpdshm.NtpdShm(self.unit, NTPD_SHM_KEY_TEST)
+        self.shm = ntpdshm.NtpdShm(self.unit)
 
     def teardown(self):
         del(self.shm)
@@ -108,7 +106,7 @@ class NtpdShmUpdateTests(object):
     unit = None
 
     def setup(self):
-        self.shm = ntpdshm.NtpdShm(self.unit, NTPD_SHM_KEY_TEST)
+        self.shm = ntpdshm.NtpdShm(self.unit)
         self.shm.valid = False
         self.shm.count = 0
         self.shm.leap = 0

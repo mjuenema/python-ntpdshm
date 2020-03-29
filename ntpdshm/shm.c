@@ -11,6 +11,9 @@
 #include <sys/shm.h>
 #include "shm.h"
 
+#define NTPD_SHM_KEY 0x4e545030
+
+
 struct shmTime {
      int             mode; 
      volatile int    count;
@@ -33,11 +36,11 @@ struct shmTime *shm_get(unsigned int unit, unsigned int shm_key_base) {
     void *shm_time;
 
     // Try to create a new shared memory segment, in case ntpd has not started yet.
-    shmid = shmget((key_t)(shm_key_base+unit), sizeof(struct shmTime), IPC_CREAT | IPC_EXCL | 0600);
+    shmid = shmget((key_t)(NTPD_SHM_KEY+unit), sizeof(struct shmTime), IPC_CREAT | IPC_EXCL | 0600);
     if (shmid < 0)
     {
         // Try to open an existing 
-        shmid = shmget((key_t)(shm_key_base+unit), 0, 0600);
+        shmid = shmget((key_t)(NTPD_SHM_KEY+unit), 0, 0600);
         if (shmid < 0) {
             return NULL;
         }
